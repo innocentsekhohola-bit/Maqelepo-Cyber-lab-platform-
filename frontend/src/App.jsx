@@ -6,6 +6,7 @@ import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
+import ChatBot from "./pages/ChatBot";
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/leaderboard" element={<PrivateRoute><LeaderboardPage /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <ChatBot />
     </BrowserRouter>
   );
 }
