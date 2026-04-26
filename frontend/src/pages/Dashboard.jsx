@@ -50,7 +50,7 @@ export default function Dashboard() {
   return (
     <div className="dashboard">
       <header className="dash-header">
-        <div className="dash-logo"><span className="dash-logo-icon">⬡</span><span>CYBER<strong>LAB</strong></span></div>
+        <div className="dash-logo"><span>⬡</span><span>CYBER<strong>LAB</strong></span></div>
         <nav className="dash-nav">
           <button onClick={() => navigate("/labs")}>LABS</button>
           <button onClick={() => navigate("/leaderboard")}>🏆</button>
@@ -61,14 +61,14 @@ export default function Dashboard() {
 
       <main className="dash-main">
         <section className="dash-hero">
-          <div className="dash-hero-left">
+          <div>
             <p className="dash-greeting">Welcome back, operator</p>
             <h1 className="dash-username">{user.username}</h1>
-            <div className="dash-rank-badge" style={{ "--rank-color": rankColor, borderColor: rankColor, color: rankColor }}>
+            <div className="dash-rank-badge" style={{ borderColor: rankColor, color: rankColor }}>
               <span>{user.rank}</span>
             </div>
           </div>
-          <div className="dash-hero-right"><div className="dash-scanline" /></div>
+          <div style={{ fontSize: '4rem', opacity: 0.05 }}>⬡</div>
         </section>
 
         <section className="dash-stats">
@@ -78,9 +78,9 @@ export default function Dashboard() {
             { label: "In Progress", value: stats.in_progress_count, icon: "◉", accent: "#3b82f6" },
             { label: "Completion", value: `${completionPct}%`, icon: "▲", accent: "#8b5cf6" },
           ].map(s => (
-            <div className="dash-stat-card" key={s.label} style={{ "--accent": s.accent }}>
-              <div className="dash-stat-icon">{s.icon}</div>
-              <div className="dash-stat-value">{s.value}</div>
+            <div className="dash-stat-card" key={s.label}>
+              <div className="dash-stat-icon" style={{ color: s.accent }}>{s.icon}</div>
+              <div className="dash-stat-value" style={{ color: s.accent }}>{s.value}</div>
               <div className="dash-stat-label">{s.label}</div>
             </div>
           ))}
@@ -92,7 +92,7 @@ export default function Dashboard() {
             {nextRank && <span className="dash-next-rank">Next: <strong>{nextRank}</strong></span>}
           </div>
           <div className="dash-rank-bar-track">
-            <div className="dash-rank-bar-fill" style={{ width: `${rankProgress}%`, "--rank-color": rankColor }} />
+            <div className="dash-rank-bar-fill" style={{ width: `${rankProgress}%` }} />
           </div>
           <div className="dash-rank-labels">
             <span style={{ color: rankColor }}>{user.rank}</span>
@@ -109,7 +109,7 @@ export default function Dashboard() {
               <ul className="dash-lab-list">
                 {completed.slice(0, 5).map(p => (
                   <li key={p.id} className="dash-lab-item completed">
-                    <div className="dli-left"><span className="dli-title">{p.lab_title}</span><span className="dli-cat">{p.lab_category}</span></div>
+                    <div><div className="dli-title">{p.lab_title}</div><div className="dli-cat">{p.lab_category}</div></div>
                     <span className="dli-points">+{p.points_earned} pts</span>
                   </li>
                 ))}
@@ -125,7 +125,7 @@ export default function Dashboard() {
               <ul className="dash-lab-list">
                 {in_progress.map(p => (
                   <li key={p.id} className="dash-lab-item inprogress" onClick={() => navigate(`/labs/${p.lab_id}`)} style={{ cursor: "pointer" }}>
-                    <div className="dli-left"><span className="dli-title">{p.lab_title}</span><span className="dli-cat">{p.lab_category}</span></div>
+                    <div><div className="dli-title">{p.lab_title}</div><div className="dli-cat">{p.lab_category}</div></div>
                     <span className="dli-attempts">{p.attempts} attempts</span>
                   </li>
                 ))}
@@ -133,7 +133,18 @@ export default function Dashboard() {
             )}
           </section>
         </div>
+
+        <footer style={{
+          textAlign: 'center',
+          padding: '1.5rem 0 0.5rem',
+          color: '#555',
+          fontSize: '0.75rem',
+          borderTop: '1px solid rgba(255,255,255,0.05)',
+          marginTop: '1rem'
+        }}>
+          © {new Date().getFullYear()} CyberLab Platform — Built by <strong style={{ color: '#00ff88' }}>Sekhohola Joseph Maqelepo</strong> — Lesotho 🇱🇸
+        </footer>
       </main>
     </div>
   );
-}
+      }
