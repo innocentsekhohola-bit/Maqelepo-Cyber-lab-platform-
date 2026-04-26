@@ -95,6 +95,20 @@ export default function LabsPage() {
           </div>
         </div>
 
+        {/* Local Labs Banner */}
+        <div style={{ 
+          background: 'rgba(255,165,0,0.08)', 
+          border: '1px solid rgba(255,165,0,0.3)', 
+          padding: '0.75rem 1rem', 
+          borderRadius: '8px', 
+          marginBottom: '1rem', 
+          color: '#ffa500', 
+          fontSize: '0.85rem', 
+          fontFamily: 'Share Tech Mono, monospace' 
+        }}>
+          🖥️ <strong>Local Labs:</strong> Some labs require Kali Linux. Run commands on your machine and submit flags here.
+        </div>
+
         {/* Filters */}
         <div className="labs-filters">
           <input
@@ -175,4 +189,4 @@ export default function LabsPage() {
       </main>
     </div>
   );
-}
+                  }
