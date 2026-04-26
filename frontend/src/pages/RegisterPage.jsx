@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./Auth.css";
 
-const API = "http://localhost:5000/api";
+const API = "https://maqelepo-cyber-lab-platform-production.up.railway.app/api";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
