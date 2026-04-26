@@ -4,6 +4,5 @@
     "buildCommand": "pip install -r backend/requirements.txt"
   },
   "deploy": {
-    "startCommand": "cd backend && python seed.py && python app.py"
-  }
+    "startCommand": "cd backend && python seed.py && gunicorn app:app -b 0.0.0.0:5000"
 }
