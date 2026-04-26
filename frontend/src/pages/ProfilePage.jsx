@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ProfilePage.css";
 
-const API = "https://maqelepo-cyber-lab-platform-production.up.railway.app/api";
+const API = "https://maqelepo.pythonanywhere.com/api";
 
 const RANK_META = {
   "Novice":          { color: "#6b7280", icon: "◈", next_pts: 100 },
