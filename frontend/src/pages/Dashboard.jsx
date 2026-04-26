@@ -5,8 +5,12 @@ import "./Dashboard.css";
 const API = "https://maqelepo.pythonanywhere.com/api";
 
 const RANK_COLORS = {
-  "Novice": "#6b7280", "Script Kiddie": "#10b981", "Hacker": "#3b82f6",
-  "Elite Hacker": "#8b5cf6", "Cyber Ninja": "#f59e0b", "Ghost Operative": "#ef4444",
+  "Novice": "#6b7280",
+  "Script Kiddie": "#10b981",
+  "Hacker": "#3b82f6",
+  "Elite Hacker": "#8b5cf6",
+  "Cyber Ninja": "#f59e0b",
+  "Ghost Operative": "#ef4444",
 };
 
 export default function Dashboard() {
@@ -46,36 +50,36 @@ export default function Dashboard() {
   return (
     <div className="dashboard">
       <header className="dash-header">
-        <div className="dash-logo"><span className="dash-logo-icon">⬡</span>CyberLab</div>
+        <div className="dash-logo"><span className="dash-logo-icon">⬡</span><span>CYBER<strong>LAB</strong></span></div>
         <nav className="dash-nav">
-          <button onClick={() => navigate("/labs")}>Labs</button>
-          <button onClick={() => navigate("/profile")}>Profile</button>
-          <button className="dash-logout" onClick={() => { localStorage.clear(); navigate("/login"); }}>Logout</button>
+          <button onClick={() => navigate("/labs")}>LABS</button>
+          <button onClick={() => navigate("/profile")}>PROFILE</button>
+          <button className="dash-logout" onClick={() => { localStorage.clear(); navigate("/login"); }}>LOGOUT</button>
         </nav>
       </header>
 
       <main className="dash-main">
         <section className="dash-hero">
-          <div>
-            <p className="dash-greeting">Welcome back,</p>
+          <div className="dash-hero-left">
+            <p className="dash-greeting">Welcome back, operator</p>
             <h1 className="dash-username">{user.username}</h1>
-            <div className="dash-rank-badge" style={{ borderColor: rankColor, color: rankColor }}>
-              {user.rank}
+            <div className="dash-rank-badge" style={{ "--rank-color": rankColor, borderColor: rankColor, color: rankColor }}>
+              <span>{user.rank}</span>
             </div>
           </div>
-          <div style={{ fontSize: '4rem', opacity: 0.1 }}>⬡</div>
+          <div className="dash-hero-right"><div className="dash-scanline" /></div>
         </section>
 
         <section className="dash-stats">
           {[
-            { label: "Points", value: user.total_points.toLocaleString(), icon: "⚡", color: "#ffc048" },
-            { label: "Completed", value: `${stats.completed_count}/${stats.total_labs}`, icon: "✓", color: "#00ff88" },
-            { label: "In Progress", value: stats.in_progress_count, icon: "◉", color: "#3b82f6" },
-            { label: "Completion", value: `${completionPct}%`, icon: "▲", color: "#8b5cf6" },
+            { label: "Total Points", value: user.total_points.toLocaleString(), icon: "⚡", accent: "#f59e0b" },
+            { label: "Labs Completed", value: `${stats.completed_count} / ${stats.total_labs}`, icon: "✓", accent: "#10b981" },
+            { label: "In Progress", value: stats.in_progress_count, icon: "◉", accent: "#3b82f6" },
+            { label: "Completion", value: `${completionPct}%`, icon: "▲", accent: "#8b5cf6" },
           ].map(s => (
-            <div className="dash-stat-card" key={s.label}>
+            <div className="dash-stat-card" key={s.label} style={{ "--accent": s.accent }}>
               <div className="dash-stat-icon">{s.icon}</div>
-              <div className="dash-stat-value" style={{ color: s.color }}>{s.value}</div>
+              <div className="dash-stat-value">{s.value}</div>
               <div className="dash-stat-label">{s.label}</div>
             </div>
           ))}
@@ -87,7 +91,7 @@ export default function Dashboard() {
             {nextRank && <span className="dash-next-rank">Next: <strong>{nextRank}</strong></span>}
           </div>
           <div className="dash-rank-bar-track">
-            <div className="dash-rank-bar-fill" style={{ width: `${rankProgress}%` }} />
+            <div className="dash-rank-bar-fill" style={{ width: `${rankProgress}%`, "--rank-color": rankColor }} />
           </div>
           <div className="dash-rank-labels">
             <span style={{ color: rankColor }}>{user.rank}</span>
@@ -97,29 +101,30 @@ export default function Dashboard() {
 
         <div className="dash-grid">
           <section className="dash-panel">
-            <h2 className="dash-panel-title"><span className="dot green" />Completed</h2>
+            <h2 className="dash-panel-title"><span className="dot green" />Recent Completions</h2>
             {completed.length === 0 ? (
-              <p className="dash-empty"><button onClick={() => navigate("/labs")}>Start your first lab →</button></p>
+              <p className="dash-empty">No labs yet. <button onClick={() => navigate("/labs")}>Start one →</button></p>
             ) : (
               <ul className="dash-lab-list">
                 {completed.slice(0, 5).map(p => (
-                  <li key={p.id} className="dash-lab-item">
-                    <div><div className="dli-title">{p.lab_title}</div><div className="dli-cat">{p.lab_category}</div></div>
+                  <li key={p.id} className="dash-lab-item completed">
+                    <div className="dli-left"><span className="dli-title">{p.lab_title}</span><span className="dli-cat">{p.lab_category}</span></div>
                     <span className="dli-points">+{p.points_earned} pts</span>
                   </li>
                 ))}
               </ul>
             )}
           </section>
+
           <section className="dash-panel">
             <h2 className="dash-panel-title"><span className="dot yellow" />In Progress</h2>
             {in_progress.length === 0 ? (
-              <p className="dash-empty"><button onClick={() => navigate("/labs")}>Pick a lab →</button></p>
+              <p className="dash-empty">All clear. <button onClick={() => navigate("/labs")}>Pick a lab →</button></p>
             ) : (
               <ul className="dash-lab-list">
                 {in_progress.map(p => (
-                  <li key={p.id} className="dash-lab-item" onClick={() => navigate(`/labs/${p.lab_id}`)}>
-                    <div><div className="dli-title">{p.lab_title}</div><div className="dli-cat">{p.lab_category}</div></div>
+                  <li key={p.id} className="dash-lab-item inprogress" onClick={() => navigate(`/labs/${p.lab_id}`)} style={{ cursor: "pointer" }}>
+                    <div className="dli-left"><span className="dli-title">{p.lab_title}</span><span className="dli-cat">{p.lab_category}</span></div>
                     <span className="dli-attempts">{p.attempts} attempts</span>
                   </li>
                 ))}
@@ -130,4 +135,4 @@ export default function Dashboard() {
       </main>
     </div>
   );
-}
+      }
