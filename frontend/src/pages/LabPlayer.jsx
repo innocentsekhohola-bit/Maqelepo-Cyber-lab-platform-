@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./LabPlayer.css";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API = "https://maqelepo-cyber-lab-platform-production.up.railway.app/api";
 
 const MOTD = [
   "  ╔═══════════════════════════════════════╗",
