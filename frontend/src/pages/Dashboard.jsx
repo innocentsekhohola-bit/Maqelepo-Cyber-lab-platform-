@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-
+const API = "https://maqelepo-cyber-lab-platform-production.up.railway.app/api";
 const RANK_COLORS = {
   "Novice": "#6b7280",
   "Script Kiddie": "#10b981",
