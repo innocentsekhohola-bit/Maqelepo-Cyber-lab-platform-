@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./LabPlayer.css";
 
-const API = "https://maqelepo-cyber-lab-platform-production.up.railway.app/api";
+const API = "https://maqelepo.pythonanywhere.com/api";
 
 const MOTD = [
   "  ╔═══════════════════════════════════════╗",
