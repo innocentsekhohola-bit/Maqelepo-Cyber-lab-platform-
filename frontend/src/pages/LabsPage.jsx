@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LabsPage.css";
 
-const API = "https://maqelepo-cyber-lab-platform-production.up.railway.app/api";
+const API = "https://maqelepo.pythonanywhere.com/api";
 
 const DIFF_CONFIG = {
   Easy:   { color: "#10b981", icon: "▲", label: "EASY" },
