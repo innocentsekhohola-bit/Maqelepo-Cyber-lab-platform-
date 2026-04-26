@@ -2,8 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./Auth.css";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-
+const API = "https://maqelepo-cyber-lab-platform-production.up.railway.app/api";
 export default function LoginPage() {
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
