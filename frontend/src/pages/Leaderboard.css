@@ -1,0 +1,23 @@
+.lb-page { min-height: 100vh; background: #050a0f; color: #c8d8e8; font-family: 'Rajdhani', sans-serif; }
+.lb-header { display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 60px; border-bottom: 1px solid #1a2d45; background: rgba(5,10,15,0.95); }
+.lb-logo { display: flex; align-items: center; gap: 0.5rem; font-family: 'Share Tech Mono', monospace; color: #00ff88; font-size: 1.1rem; cursor: pointer; }
+.lb-header nav { display: flex; gap: 0.5rem; }
+.lb-header nav button { background: none; border: 1px solid transparent; color: #4a6a8a; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; padding: 0.4rem 0.8rem; cursor: pointer; }
+.lb-header nav button:hover { color: #00aaff; border-color: #00aaff; }
+.lb-main { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; }
+.lb-title { font-size: 2.5rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; }
+.lb-subtitle { color: #4a6a8a; margin-bottom: 2rem; font-size: 1.1rem; }
+.lb-table { border: 1px solid #1a2d45; }
+.lb-row { display: flex; padding: 0.75rem 1rem; border-bottom: 1px solid #1a2d45; align-items: center; }
+.lb-header-row { background: #0a1220; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: #4a6a8a; text-transform: uppercase; }
+.lb-rank { width: 40px; font-family: 'Share Tech Mono', monospace; }
+.lb-user { flex: 1; font-weight: 600; }
+.lb-level { width: 140px; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: #4a6a8a; }
+.lb-labs { width: 60px; text-align: center; font-family: 'Share Tech Mono', monospace; }
+.lb-pts { width: 100px; text-align: right; font-family: 'Share Tech Mono', monospace; color: #ffcc00; font-weight: 700; }
+.lb-top-1 { background: rgba(255,215,0,0.05); }
+.lb-top-2 { background: rgba(192,192,192,0.03); }
+.lb-top-3 { background: rgba(205,127,50,0.03); }
+.lb-loading { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #050a0f; color: #4a6a8a; font-family: 'Share Tech Mono', monospace; gap: 1rem; }
+.lb-spinner { width: 40px; height: 40px; border: 2px solid #1a2d45; border-top-color: #00ff88; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
