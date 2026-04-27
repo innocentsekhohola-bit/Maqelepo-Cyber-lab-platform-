@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Teams.css";
 
@@ -9,23 +9,31 @@ export default function TeamsPage() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [newTeam, setNewTeam] = useState("");
   const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (!token) return;
-    const [teamsRes, lbRes] = await Promise.all([
-      fetch(`${API}/teams`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`${API}/teams/leaderboard`)
-    ]);
-    setTeams((await teamsRes.json()).teams || []);
-    setLeaderboard((await lbRes.json()).teams || []);
-  };
+    try {
+      const [teamsRes, lbRes] = await Promise.all([
+        fetch(`${API}/teams`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API}/teams/leaderboard`)
+      ]);
+      const teamsData = await teamsRes.json();
+      const lbData = await lbRes.json();
+      setTeams(teamsData.teams || []);
+      setLeaderboard(lbData.teams || []);
+    } catch (e) {
+      console.log("Error");
+    }
+    setLoading(false);
+  }, [token]);
 
   useEffect(() => {
     if (!token) { navigate("/login"); return; }
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const createTeam = async () => {
     if (!newTeam.trim()) return;
@@ -34,9 +42,14 @@ export default function TeamsPage() {
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ name: newTeam })
     });
-    setMsg((await res.json()).message || "Created");
-    setNewTeam("");
-    fetchData();
+    const data = await res.json();
+    if (data.team) {
+      setMsg("Team created!");
+      setNewTeam("");
+      fetchData();
+    } else {
+      setMsg(data.error || "Failed");
+    }
   };
 
   const joinTeam = async (id) => {
@@ -48,6 +61,8 @@ export default function TeamsPage() {
     await fetch(`${API}/teams/${id}/leave`, { method: "POST", headers: { Authorization: `Bearer ${token}` } });
     fetchData();
   };
+
+  if (loading) return <div className="teams-loading">Loading...</div>;
 
   return (
     <div className="teams-page">
@@ -63,7 +78,7 @@ export default function TeamsPage() {
       <main className="teams-main">
         <h1>🏴 Teams</h1>
         <p>Create or join a team to compete together</p>
-        {msg && <div className="teams-msg">{msg}</div>}
+        {msg && <div className="teams-msg" onClick={() => setMsg("")}>{msg}</div>}
         <div className="teams-create">
           <input value={newTeam} onChange={e => setNewTeam(e.target.value)} placeholder="Team name..." onKeyDown={e => e.key === "Enter" && createTeam()} />
           <button onClick={createTeam}>Create</button>
@@ -85,6 +100,7 @@ export default function TeamsPage() {
         </div>
         <h2>🏆 Team Leaderboard</h2>
         <div className="teams-lb">
+          {leaderboard.length === 0 && <p style={{ color: '#666', padding: '1rem' }}>No teams ranked yet</p>}
           {leaderboard.map((t, i) => (
             <div key={i} className="teams-lb-row">
               <span className="lb-rank">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`}</span>
