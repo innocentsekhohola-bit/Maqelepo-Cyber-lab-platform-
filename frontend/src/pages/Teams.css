@@ -1,0 +1,18 @@
+.teams-page { min-height: 100vh; background: #050a0f; color: #c8d8e8; font-family: 'Rajdhani', sans-serif; }
+.teams-header { display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 60px; border-bottom: 1px solid #1a2d45; background: rgba(5,10,15,0.95); }
+.teams-logo { color: #00ff88; cursor: pointer; }
+.teams-header nav button { background: none; border: 1px solid transparent; color: #4a6a8a; padding: 0.4rem 0.8rem; cursor: pointer; }
+.teams-main { max-width: 800px; margin: 0 auto; padding: 2rem; }
+.teams-main h1 { color: #fff; margin-bottom: 1rem; }
+.teams-main h2 { color: #4a6a8a; margin: 1.5rem 0 0.75rem; font-size: 1rem; text-transform: uppercase; }
+.teams-create { display: flex; gap: 0.5rem; margin-bottom: 2rem; }
+.teams-create input { flex: 1; padding: 0.5rem; background: #0a1220; border: 1px solid #1a2d45; color: #fff; }
+.teams-create button { padding: 0.5rem 1rem; background: #00ff88; color: #000; border: none; cursor: pointer; font-weight: 600; }
+.teams-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.team-card { padding: 1rem; border: 1px solid #1a2d45; cursor: pointer; transition: border-color 0.2s; }
+.team-card:hover { border-color: #00ff88; }
+.team-card h3 { color: #fff; margin-bottom: 0.25rem; }
+.team-card p { color: #4a6a8a; font-size: 0.8rem; }
+.teams-lb { border: 1px solid #1a2d45; }
+.teams-lb-row { display: flex; padding: 0.6rem 1rem; border-bottom: 1px solid #1a2d45; justify-content: space-between; }
+.teams-loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #050a0f; color: #4a6a8a; }
