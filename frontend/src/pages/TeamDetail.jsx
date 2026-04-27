@@ -18,17 +18,25 @@ export default function TeamDetail() {
   const navigate = useNavigate();
 
   const fetchData = async () => {
-    const [teamRes, teamsRes, labsRes] = await Promise.all([
-      fetch(`${API}/teams/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`${API}/teams`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`${API}/labs-list`)
-    ]);
-    const teamData = await teamRes.json();
-    setTeam(teamData.team);
-    setChallengesSent(teamData.challenges_sent || []);
-    setChallengesReceived(teamData.challenges_received || []);
-    setTeams((await teamsRes.json()).teams || []);
-    setLabs((await labsRes.json()).labs || []);
+    try {
+      const [teamRes, teamsRes, labsRes] = await Promise.all([
+        fetch(`${API}/teams/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API}/teams`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API}/labs-list`)
+      ]);
+      const teamData = await teamRes.json();
+      if (teamData.team) {
+        setTeam(teamData.team);
+        setChallengesSent(teamData.challenges_sent || []);
+        setChallengesReceived(teamData.challenges_received || []);
+      }
+      const teamsData = await teamsRes.json();
+      setTeams(teamsData.teams || []);
+      const labsData = await labsRes.json();
+      setLabs(labsData.labs || []);
+    } catch (e) {
+      console.log("Error fetching data");
+    }
   };
 
   useEffect(() => {
@@ -45,7 +53,10 @@ export default function TeamDetail() {
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ challenger_team_id: parseInt(id), challenged_team_id: parseInt(selectedTeam), lab_id: parseInt(selectedLab) })
     });
-    setMsg((await res.json()).message || "Sent!");
+    const data = await res.json();
+    setMsg(data.message || "Sent!");
+    setSelectedTeam("");
+    setSelectedLab("");
     fetchData();
   };
 
@@ -59,7 +70,11 @@ export default function TeamDetail() {
     fetchData();
   };
 
-  if (!team) return <div className="teams-loading">Loading...</div>;
+  const startLab = (labId) => {
+    navigate(`/labs/${labId}`);
+  };
+
+  if (!team) return <div className="teams-loading">Loading team...</div>;
 
   return (
     <div className="teams-page">
@@ -74,6 +89,7 @@ export default function TeamDetail() {
         <h1>{team.name}</h1>
         <p>Total Points: <strong style={{ color: '#ffc048' }}>{team.total_points}</strong> | Members: {team.members.length}</p>
         {msg && <div className="teams-msg">{msg}</div>}
+
         <h2>Members</h2>
         <div className="members-grid">
           {team.members.map(m => (
@@ -85,6 +101,7 @@ export default function TeamDetail() {
             </div>
           ))}
         </div>
+
         <h2>⚔️ Challenge Another Team</h2>
         <div className="challenge-form">
           <select value={selectedTeam} onChange={e => setSelectedTeam(e.target.value)}>
@@ -97,21 +114,48 @@ export default function TeamDetail() {
           </select>
           <button onClick={sendChallenge}>Challenge!</button>
         </div>
+
         <h2>📨 Challenges Received</h2>
         {challengesReceived.length === 0 && <p style={{ color: '#666' }}>No challenges</p>}
         {challengesReceived.map(c => (
           <div key={c.id} className="challenge-card">
-            <div><strong>{c.challenger}</strong> → <strong>{c.lab}</strong><br /><span className={`challenge-status ${c.status}`}>{c.status}</span></div>
-            {c.status === 'pending' && <div className="challenge-actions"><button className="btn-accept" onClick={() => acceptChallenge(c.id)}>Accept</button><button className="btn-decline" onClick={() => declineChallenge(c.id)}>Decline</button></div>}
-            {c.status === 'completed' && <span className="challenge-winner">🏆 {c.winner || 'Tie'} won!</span>}
+            <div>
+              <strong>{c.challenger}</strong> → <strong>{c.lab}</strong>
+              <br /><span className={`challenge-status ${c.status}`}>{c.status}</span>
+            </div>
+            <div className="challenge-actions">
+              {c.status === 'pending' && (
+                <>
+                  <button className="btn-accept" onClick={() => acceptChallenge(c.id)}>Accept</button>
+                  <button className="btn-decline" onClick={() => declineChallenge(c.id)}>Decline</button>
+                </>
+              )}
+              {c.status === 'accepted' && (
+                <button className="btn-join" onClick={() => startLab(c.lab_id)}>⚡ Start Lab!</button>
+              )}
+              {c.status === 'completed' && (
+                <span className="challenge-winner">🏆 {c.winner || 'Tie'} won!</span>
+              )}
+            </div>
           </div>
         ))}
+
         <h2>📤 Challenges Sent</h2>
         {challengesSent.length === 0 && <p style={{ color: '#666' }}>No challenges sent</p>}
         {challengesSent.map(c => (
           <div key={c.id} className="challenge-card">
-            <div>To <strong>{c.challenged}</strong> → <strong>{c.lab}</strong><br /><span className={`challenge-status ${c.status}`}>{c.status}</span></div>
-            {c.status === 'completed' && <span className="challenge-winner">🏆 {c.winner || 'Tie'} won!</span>}
+            <div>
+              To <strong>{c.challenged}</strong> → <strong>{c.lab}</strong>
+              <br /><span className={`challenge-status ${c.status}`}>{c.status}</span>
+            </div>
+            <div className="challenge-actions">
+              {c.status === 'accepted' && (
+                <button className="btn-join" onClick={() => startLab(c.lab_id)}>⚡ Start Lab!</button>
+              )}
+              {c.status === 'completed' && (
+                <span className="challenge-winner">🏆 {c.winner || 'Tie'} won!</span>
+              )}
+            </div>
           </div>
         ))}
       </main>
