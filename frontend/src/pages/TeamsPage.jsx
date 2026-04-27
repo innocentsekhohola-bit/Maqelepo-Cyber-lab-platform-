@@ -8,56 +8,58 @@ export default function TeamsPage() {
   const [teams, setTeams] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
   const [newTeam, setNewTeam] = useState("");
-  const [message, setMessage] = useState("");
+  const [msg, setMsg] = useState("");
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  const fetchTeams = async () => {
-    const res = await fetch(`${API}/teams`, { headers: { Authorization: `Bearer ${token}` } });
-    const data = await res.json();
-    setTeams(data.teams || []);
-  };
-
-  const fetchLeaderboard = async () => {
-    const res = await fetch(`${API}/teams/leaderboard`);
-    const data = await res.json();
-    setLeaderboard(data.teams || []);
+  const fetchData = async () => {
+    if (!token) return;
+    const [teamsRes, lbRes] = await Promise.all([
+      fetch(`${API}/teams`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${API}/teams/leaderboard`)
+    ]);
+    const teamsData = await teamsRes.json();
+    const lbData = await lbRes.json();
+    setTeams(teamsData.teams || []);
+    setLeaderboard(lbData.teams || []);
   };
 
   useEffect(() => {
     if (!token) { navigate("/login"); return; }
-    fetchTeams();
-    fetchLeaderboard();
+    fetchData();
   }, []);
 
   const createTeam = async () => {
     if (!newTeam.trim()) return;
-    await fetch(`${API}/teams/create`, {
+    const res = await fetch(`${API}/teams/create`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ name: newTeam })
     });
+    const data = await res.json();
+    setMsg(data.message || data.error);
     setNewTeam("");
-    setMessage("Team created!");
-    fetchTeams();
-    fetchLeaderboard();
+    fetchData();
   };
 
   const joinTeam = async (id) => {
-    await fetch(`${API}/teams/${id}/join`, {
+    const res = await fetch(`${API}/teams/${id}/join`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` }
     });
-    fetchTeams();
-    navigate(`/teams/${id}`);
+    const data = await res.json();
+    setMsg(data.message || data.error);
+    fetchData();
   };
 
   const leaveTeam = async (id) => {
-    await fetch(`${API}/teams/${id}/leave`, {
+    const res = await fetch(`${API}/teams/${id}/leave`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` }
     });
-    fetchTeams();
+    const data = await res.json();
+    setMsg(data.message || data.error);
+    fetchData();
   };
 
   return (
@@ -74,37 +76,30 @@ export default function TeamsPage() {
 
       <main className="teams-main">
         <h1>🏴 Teams</h1>
-        <p>Create or join a team to compete together!</p>
+        <p>Create or join a team to compete together</p>
 
-        {message && <div className="teams-msg">{message}</div>}
+        {msg && <div className="teams-msg">{msg}</div>}
 
         <div className="teams-create">
-          <input value={newTeam} onChange={e => setNewTeam(e.target.value)} placeholder="Enter team name..." onKeyDown={e => e.key === "Enter" && createTeam()} />
-          <button onClick={createTeam}>Create Team</button>
+          <input value={newTeam} onChange={e => setNewTeam(e.target.value)} placeholder="Team name..." onKeyDown={e => e.key === "Enter" && createTeam()} />
+          <button onClick={createTeam}>Create</button>
         </div>
 
-        <h2>All Teams</h2>
+        <h2>All Teams ({teams.length})</h2>
         <div className="teams-grid">
-          {teams.length === 0 && <p style={{ color: '#4a6a8a' }}>No teams yet. Create the first one!</p>}
+          {teams.length === 0 && <p style={{ color: '#666' }}>No teams yet. Create one!</p>}
           {teams.map(team => (
             <div key={team.id} className="team-card">
-              <div className="team-card-top">
-                <h3>{team.name}</h3>
-                <span className="team-count">{team.member_count} members</span>
-              </div>
+              <h3>{team.name}</h3>
               <div className="team-members">
-                {team.members.map(m => (
-                  <span key={m.username} className="team-member-tag">{m.username}</span>
-                ))}
+                {team.members.map(m => <span key={m.username} className="team-member-tag">{m.username}</span>)}
               </div>
-              <div className="team-actions">
-                <button onClick={() => navigate(`/teams/${team.id}`)}>View</button>
-                {team.is_member ? (
-                  <button className="btn-leave" onClick={() => leaveTeam(team.id)}>Leave</button>
-                ) : (
-                  <button className="btn-join" onClick={() => joinTeam(team.id)}>Join</button>
-                )}
-              </div>
+              <p className="team-count">{team.member_count} members</p>
+              {team.is_member ? (
+                <button className="btn-leave" onClick={() => leaveTeam(team.id)}>Leave</button>
+              ) : (
+                <button className="btn-join" onClick={() => joinTeam(team.id)}>Join</button>
+              )}
             </div>
           ))}
         </div>
@@ -112,7 +107,7 @@ export default function TeamsPage() {
         <h2>🏆 Team Leaderboard</h2>
         <div className="teams-lb">
           {leaderboard.map((t, i) => (
-            <div key={i} className="teams-lb-row" style={{ background: i === 0 ? 'rgba(255,215,0,0.05)' : i === 1 ? 'rgba(192,192,192,0.03)' : i === 2 ? 'rgba(205,127,50,0.03)' : 'transparent' }}>
+            <div key={i} className="teams-lb-row">
               <span className="lb-rank">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`}</span>
               <span className="lb-name">{t.name}</span>
               <span className="lb-pts">{t.points} pts</span>
