@@ -54,6 +54,7 @@ export default function Dashboard() {
         <nav className="dash-nav">
           <button onClick={() => navigate("/labs")}>LABS</button>
           <button onClick={() => navigate("/leaderboard")}>🏆</button>
+          <button onClick={() => navigate("/teams")}>TEAMS</button>
           <button onClick={() => navigate("/profile")}>PROFILE</button>
           <button className="dash-logout" onClick={() => { localStorage.clear(); navigate("/login"); }}>LOGOUT</button>
         </nav>
@@ -147,4 +148,4 @@ export default function Dashboard() {
       </main>
     </div>
   );
-      }
+}
