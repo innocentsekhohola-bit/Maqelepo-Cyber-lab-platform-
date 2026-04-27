@@ -10,7 +10,6 @@ import ChatBot from "./pages/ChatBot";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import TeamsPage from "./pages/TeamsPage";
-import TeamDetail from "./pages/TeamDetail";
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -31,7 +30,6 @@ export default function App() {
         <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
         <Route path="/leaderboard" element={<PrivateRoute><LeaderboardPage /></PrivateRoute>} />
         <Route path="/teams" element={<PrivateRoute><TeamsPage /></PrivateRoute>} />
-        <Route path="/teams/:id" element={<PrivateRoute><TeamDetail /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <ChatBot />
