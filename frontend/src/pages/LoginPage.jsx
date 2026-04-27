@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./Auth.css";
 
-const API = "https://maqelepo.pythonanywhere.com/api";
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
 export default function LoginPage() {
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
@@ -61,6 +62,10 @@ export default function LoginPage() {
         <button className="auth-btn" onClick={handleSubmit} disabled={loading}>
           {loading ? "Authenticating..." : "LOGIN"}
         </button>
+
+        <p className="auth-link">
+          <Link to="/forgot-password">Forgot password?</Link>
+        </p>
 
         <p className="auth-link">
           No account? <Link to="/register">Register here</Link>
