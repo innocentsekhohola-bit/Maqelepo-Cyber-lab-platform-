@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import ChatBot from "./pages/ChatBot";
+import ForgotPassword from "./pages/ForgotPassword";
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -19,6 +20,7 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/labs" element={<LabsPage />} />
         <Route path="/labs/:id" element={<LabPlayer />} />
