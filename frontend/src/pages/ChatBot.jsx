@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import "./ChatBot.css";
 
-const GEMINI_API = "AIzaSyD9rYQwrZXetb0JM44ArkUanNl1m1gEGro";
+const API = "https://maqelepo.pythonanywhere.com/api";
 
 export default function ChatBot() {
   const [open, setOpen] = useState(false);
@@ -24,19 +24,16 @@ export default function ChatBot() {
     setLoading(true);
 
     try {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API}`, {
+      const res = await fetch(`${API}/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `You are a cybersecurity lab assistant for CyberLab platform. Help users with hacking concepts, lab tips, and command syntax. Keep answers short and helpful. User asked: ${userMsg}`
-            }]
-          }]
-        })
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify({ message: userMsg })
       });
       const data = await res.json();
-      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't process that.";
+      const reply = data.reply || "Sorry, I couldn't process that.";
       setMessages(prev => [...prev, { from: "bot", text: reply }]);
     } catch {
       setMessages(prev => [...prev, { from: "bot", text: "Error connecting to AI. Try again." }]);
