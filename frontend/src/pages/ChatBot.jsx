@@ -23,12 +23,20 @@ export default function ChatBot() {
     setInput("");
     setLoading(true);
 
+    const token = localStorage.getItem("token");
+    
+    if (!token) {
+      setMessages(prev => [...prev, { from: "bot", text: "Please log in to use the AI assistant." }]);
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch(`${API}/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ message: userMsg })
       });
