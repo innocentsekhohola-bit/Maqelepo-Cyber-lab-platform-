@@ -266,7 +266,7 @@ export default function Dashboard() {
         </div>
 
         {/* FOOTER */}
-        <footer>
+        <footer className="dash-footer">
           © {new Date().getFullYear()} CyberLab Platform — Built by{" "}
           <strong style={{ color: "#00ffcc" }}>
             Sekhohola Joseph Maqelepo
@@ -277,4 +277,4 @@ export default function Dashboard() {
       </main>
     </div>
   );
-}
+      }
