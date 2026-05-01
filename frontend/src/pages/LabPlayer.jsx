@@ -199,7 +199,7 @@ export default function LabPlayer() {
 
     window.addEventListener('resize', () => fit.fit());
     return () => term.dispose();
-  }, [loading, lab, commandHistory]);
+  }, [loading, lab]);
 
   const getHint = async (term) => {
     const token = localStorage.getItem("token");
@@ -301,4 +301,4 @@ export default function LabPlayer() {
       </div>
     </div>
   );
-}
+                            }
