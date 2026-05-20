@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
@@ -20,12 +20,15 @@ export default function LabPlayer() {
   const [completed, setCompleted] = useState(false);
   const [attempts, setAttempts] = useState(0);
   const [mentorTip, setMentorTip] = useState("💡 I'll guide you through this lab. Type your first command!");
-  const [commandHistory, setCommandHistory] = useState([]);
   
   const termRef = useRef(null);
   const terminalRef = useRef(null);
   const fitRef = useRef(null);
   const currentLine = useRef("");
+  const commandHistory = useRef([]);
+  const attemptsRef = useRef(0);
+  const hintsUsedRef = useRef(0);
+  const completedRef = useRef(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -37,8 +40,11 @@ export default function LabPlayer() {
         setLab(d.lab);
         if (d.lab.user_progress) {
           setCompleted(d.lab.user_progress.completed);
+          completedRef.current = d.lab.user_progress.completed;
           setAttempts(d.lab.user_progress.attempts);
+          attemptsRef.current = d.lab.user_progress.attempts;
           setHintsUsed(d.lab.user_progress.hints_used);
+          hintsUsedRef.current = d.lab.user_progress.hints_used;
         }
         setLoading(false);
       })
@@ -52,12 +58,31 @@ export default function LabPlayer() {
       const res = await fetch(`${API}/mentor`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ lab: lab.title, command: cmd, history: commandHistory })
+        body: JSON.stringify({ lab: lab.title, command: cmd, history: commandHistory.current })
       });
       const data = await res.json();
       setMentorTip(data.tip || "Keep going, you're doing great!");
     } catch {}
   };
+
+  const getHint = useCallback(async (term) => {
+    const token = localStorage.getItem("token");
+    if (!token) { term.writeln("[ERROR] Login required."); return; }
+    const res = await fetch(`${API}/use-hint`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ lab_id: parseInt(id), hint_index: hintsUsedRef.current })
+    });
+    const data = await res.json();
+    if (data.error) {
+      term.writeln(`\x1b[1;31m[HINT] ${data.error}\x1b[0m`);
+    } else {
+      hintsUsedRef.current = data.hints_used;
+      setHintsUsed(data.hints_used);
+      term.writeln(`\x1b[1;33m[HINT ${data.hints_used}] ${data.hint}\x1b[0m`);
+      term.writeln(`  (Penalty: -${data.point_penalty} pts)`);
+    }
+  }, [id]);
 
   useEffect(() => {
     if (loading || !lab || terminalRef.current) return;
@@ -70,10 +95,6 @@ export default function LabPlayer() {
         background: "#050a0f",
         foreground: "#c8d8e8",
         cursor: "#00ff88",
-        green: "#00ff88",
-        blue: "#00aaff",
-        red: "#ef4444",
-        yellow: "#ffcc00",
       },
       cols: 80,
       rows: 24,
@@ -114,11 +135,7 @@ export default function LabPlayer() {
         
         if (!cmd) { term.write("\x1b[1;32m$ \x1b[0m"); return; }
         
-        if (cmd === "clear") {
-          term.clear();
-          term.write("\x1b[1;32m$ \x1b[0m");
-          return;
-        }
+        if (cmd === "clear") { term.clear(); term.write("\x1b[1;32m$ \x1b[0m"); return; }
         
         if (cmd === "help") {
           term.writeln("Available:");
@@ -132,7 +149,7 @@ export default function LabPlayer() {
         }
         
         if (cmd === "attempts") {
-          term.writeln(`\x1b[1;33mAttempts: ${attempts}\x1b[0m`);
+          term.writeln(`\x1b[1;33mAttempts: ${attemptsRef.current}\x1b[0m`);
           term.write("\x1b[1;32m$ \x1b[0m");
           return;
         }
@@ -150,8 +167,7 @@ export default function LabPlayer() {
           return;
         }
 
-        const newHistory = [...commandHistory, cmd];
-        setCommandHistory(newHistory);
+        commandHistory.current = [...commandHistory.current, cmd];
         getMentorTip(cmd);
 
         try {
@@ -161,14 +177,13 @@ export default function LabPlayer() {
             body: JSON.stringify({ lab_id: parseInt(id), command: cmd })
           });
           const data = await res.json();
-          setAttempts(data.attempts || attempts + 1);
+          attemptsRef.current = data.attempts || attemptsRef.current + 1;
+          setAttempts(attemptsRef.current);
 
           if (data.blocked) {
             term.writeln(`\x1b[1;31m[BLOCKED] ${data.output}\x1b[0m`);
           } else {
-            const outLines = (data.output || "").split('\n');
-            outLines.forEach(line => term.writeln(line));
-            
+            (data.output || "").split('\n').forEach(line => term.writeln(line));
             if (data.flag) {
               term.writeln("");
               term.writeln("\x1b[1;33m══════════════════════════════════\x1b[0m");
@@ -190,7 +205,7 @@ export default function LabPlayer() {
           term.write("\b \b");
         }
       } else if (code < 32) {
-        // ignore
+        // ignore control chars
       } else {
         currentLine.current += data;
         term.write(data);
@@ -198,25 +213,8 @@ export default function LabPlayer() {
     });
 
     window.addEventListener('resize', () => fit.fit());
-    return () => term.dispose();
+    return () => { term.dispose(); terminalRef.current = null; };
   }, [loading, lab]);
-
-  const getHint = async (term) => {
-    const token = localStorage.getItem("token");
-    const res = await fetch(`${API}/use-hint`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ lab_id: parseInt(id), hint_index: hintsUsed })
-    });
-    const data = await res.json();
-    if (data.error) {
-      term.writeln(`\x1b[1;31m[HINT] ${data.error}\x1b[0m`);
-    } else {
-      setHintsUsed(data.hints_used);
-      term.writeln(`\x1b[1;33m[HINT ${data.hints_used}] ${data.hint}\x1b[0m`);
-      term.writeln(`  (Penalty: -${data.point_penalty} pts)`);
-    }
-  };
 
   const submitFlag = async () => {
     const token = localStorage.getItem("token");
@@ -231,6 +229,7 @@ export default function LabPlayer() {
       setFlagStatus("success");
       setFlagMsg(data.message || "Lab complete!");
       setCompleted(true);
+      completedRef.current = true;
       setMentorTip("🎉 Amazing work! Lab complete! You're a true hacker!");
     } else {
       setFlagStatus("error");
@@ -301,4 +300,4 @@ export default function LabPlayer() {
       </div>
     </div>
   );
-                            }
+      }
