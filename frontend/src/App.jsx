@@ -35,7 +35,6 @@ export default function App() {
         <Route path="/teams" element={<PrivateRoute><TeamsPage /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
         <Route path="/coordinator" element={<PrivateRoute><CoordinatorPage /></PrivateRoute>} />
-
       </Routes>
       <ChatBot />
     </BrowserRouter>
