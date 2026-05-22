@@ -122,13 +122,13 @@ export default function CampaignPlayer() {
         }
 
         try {
-          const res = await fetch(`${API}/execute`, {
+          const res = await fetch(`${API}/campaigns/${id}/execute`, {
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ lab_id: currentStage.id, command: cmd })
+            body: JSON.stringify({ command: cmd })
           });
           const data = await res.json();
-          attemptsRef.current = data.attempts || attemptsRef.current + 1;
+          attemptsRef.current += 1;
           setAttempts(attemptsRef.current);
           if (data.output) {
             (data.output || "").split('\n').forEach(line => term.writeln(line));
@@ -218,4 +218,4 @@ export default function CampaignPlayer() {
       </div>
     </div>
   );
-            }
+      }
