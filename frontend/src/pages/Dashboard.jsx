@@ -97,6 +97,7 @@ export default function Dashboard() {
 
         <nav className="dash-nav">
           <button onClick={() => navigate("/labs")}>LABS</button>
+          <button onClick={() => navigate("/campaigns")}>🎯</button>
           <button onClick={() => navigate("/leaderboard")}>🏆</button>
           <button onClick={() => navigate("/coordinator")}>📋</button>
           <button onClick={() => navigate("/teams")}>TEAMS</button>
